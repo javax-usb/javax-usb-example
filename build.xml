@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+
+<!--
+  ** Buildfile for javax.usb examples
+  **
+  -->
+
+<project name="JSR80 examples" default="help">
+	<!-- User overrides from environment -->
+	<property environment="Jsr80Env"/>
+
+	<property name="Jsr80Env.JSR80_EXAMPLE_SRC_DIR" value="src"/>
+	<property name="Jsr80Env.JSR80_EXAMPLE_DEST_DIR" value="src"/>
+	
+	<property name="Jsr80Env.JSR80_EXAMPLE_JARFILE_DIR" value="lib"/>
+	<property name="Jsr80Env.JSR80_EXAMPLE_JARFILE" value="jsr80_example.jar"/>
+
+	<property name="Jsr80Env.JSR80_EXAMPLE_DEPRECATION" value="on"/>
+	<property name="Jsr80Env.JSR80_EXAMPLE_DEBUG" value="off"/>
+	<property name="Jsr80Env.JSR80_EXAMPLE_OPTIMIZE" value="on"/>
+	<property name="Jsr80Env.JSR80_EXAMPLE_VERBOSE" value="off"/>
+	<property name="Jsr80Env.JSR80_EXAMPLE_QUIET" value="off"/>
+	<property name="Jsr80Env.JSR80_EXAMPLE_COMPRESS" value="on"/>
+	
+	<!-- Variable defaults -->
+	<property name="jsr80.example.src.dir" value="${Jsr80Env.JSR80_EXAMPLE_SRC_DIR}"/>
+	<property name="jsr80.example.dest.dir" value="${Jsr80Env.JSR80_EXAMPLE_DEST_DIR}"/>
+
+	<property name="jsr80.example.jarfile.dir" value="${Jsr80Env.JSR80_EXAMPLE_JARFILE_DIR}"/>
+	<property name="jsr80.example.jarfile" value="${Jsr80Env.JSR80_EXAMPLE_JARFILE}"/>
+
+	<property name="jsr80.example.deprecation" value="${Jsr80Env.JSR80_EXAMPLE_DEPRECATION}"/>
+	<property name="jsr80.example.debug" value="${Jsr80Env.JSR80_EXAMPLE_DEBUG}"/>
+	<property name="jsr80.example.optimize" value="${Jsr80Env.JSR80_EXAMPLE_OPTIMIZE}"/>
+	<property name="jsr80.example.verbose" value="${Jsr80Env.JSR80_EXAMPLE_VERBOSE}"/>
+	<property name="jsr80.example.quiet" value="${Jsr80Env.JSR80_EXAMPLE_QUIET}"/>
+	<property name="jsr80.example.compress" value="${Jsr80Env.JSR80_EXAMPLE_COMPRESS}"/>
+	
+	<!-- Show help (the different options for this build.xml) -->
+	<target name="help">
+		<echo message="Buildfile for javax.usb example code."/>
+		<echo message=""/>
+		<echo message="Targets:"/>
+		<echo message=""/>
+		<echo message="  all              == clean compile jars"/>
+		<echo message="  clean            Clean everything"/>
+		<echo message="  compile          Compile all classes"/>
+		<echo message="  help             Show this help"/>
+		<echo message="  jars             Create JAR file"/>
+		<echo message=""/>
+	</target>
+
+	<!-- Compile source files -->
+	<target name="compile">
+		<echo message="Compiling javax.usb example classes."/>
+		<mkdir dir="${jsr80.example.dest.dir}"/>
+		<javac srcdir="${jsr80.example.src.dir}"
+			destdir="${jsr80.example.dest.dir}"
+			deprecation="${jsr80.example.deprecation}"
+			debug="${jsr80.example.debug}"
+			optimize="${jsr80.example.optimize}"
+			verbose="${jsr80.example.verbose}" 
+			includes="**"/>
+	</target>
+
+	<!-- Create JAR file -->
+	<target name="jars" depends="compile">
+		<mkdir dir="${jsr80.example.jarfile.dir}"/>
+		<jar jarfile="${jsr80.example.jarfile.dir}/${jsr80.example.jarfile}"
+			basedir="${jsr80.example.dest.dir}"
+			includes="**/*.class"/>
+	</target>
+
+	<!-- Do everything -->
+	<target name="all" depends="clean,compile,jars"/>
+
+	<!-- Clean all classfiles -->
+	<target name="clean">
+		<echo message="Cleaning all javax.usb example classes."/>
+		<delete verbose="${jsr80.example.verbose}" quiet="${jsr80.example.quiet}" failonerror="false">
+			<fileset dir="${jsr80.example.dest.dir}" includes="**/*.class"/>
+			<fileset dir="${jsr80.example.jarfile.dir}" includes="${jsr80.example.jarfile}"/>
+		</delete>
+	</target>
+
+</project>
