@@ -13,16 +13,35 @@ import javax.usb.*;
 
 /**
  * Show the topology tree.
+ * <p>
  * This class shows how to enumerate all USB-connected devices.
+ * This class should not be used except by other example code.
  * @author Dan Streetman
  */
 public class ShowTopology
 {
-	/**
-	 * Main method.
-	 * @param argv The arguments.
-	 */
 	public static void main(String argv[])
+	{
+		UsbHub virtualRootUsbHub = getVirtualRootUsbHub();
+
+		/* This method recurses through the topology tree, using
+		 * the getAttachedUsbDevices() method.
+		 */
+		System.out.println("Using UsbHub.getAttachedUsbDevices() to show toplogy:");
+		processUsingGetAttachedUsbDevices(virtualRootUsbHub, "");
+
+		/* Let's go through the topology again, but using getUsbPorts()
+		 * this time.
+		 */
+		System.out.println("Using UsbHub.getUsbPorts() to show toplogy:");
+		processUsingGetUsbPorts(virtualRootUsbHub, "");
+	}
+
+	/**
+	 * Get the virtual root UsbHub.
+	 * @return The virtual root UsbHub.
+	 */
+	public static UsbHub getVirtualRootUsbHub()
 	{
 		UsbServices services = null;
 		UsbHub virtualRootUsbHub = null;
@@ -36,9 +55,9 @@ public class ShowTopology
 		try {
 			services = UsbHostManager.getUsbServices();
 		} catch ( UsbException uE ) {
-			exit("Error : " + uE.getMessage());
+			throw new RuntimeException("Error : " + uE.getMessage());
 		} catch ( SecurityException sE ) {
-			exit("Error : " + sE.getMessage());
+			throw new RuntimeException("Error : " + sE.getMessage());
 		}
 
 		/* Now we need to get the virtual root UsbHub,
@@ -56,22 +75,12 @@ public class ShowTopology
 		try {
 			virtualRootUsbHub = services.getRootUsbHub();
 		} catch ( UsbException uE ) {
-			exit("Error : " + uE.getMessage());
+			throw new RuntimeException("Error : " + uE.getMessage());
 		} catch ( SecurityException sE ) {
-			exit("Error : " + sE.getMessage());
+			throw new RuntimeException("Error : " + sE.getMessage());
 		}
 
-		/* This method recurses through the topology tree, using
-		 * the getAttachedUsbDevices() method.
-		 */
-		System.out.println("Using UsbHub.getAttachedUsbDevices() to show toplogy:");
-		processUsingGetAttachedUsbDevices(virtualRootUsbHub, "");
-
-		/* Let's go through the topology again, but using getUsbPorts()
-		 * this time.
-		 */
-		System.out.println("Using UsbHub.getUsbPorts() to show toplogy:");
-		processUsingGetUsbPorts(virtualRootUsbHub, "");
+		return virtualRootUsbHub;
 	}
 
 	/**
@@ -153,16 +162,6 @@ public class ShowTopology
 				processUsingGetUsbPorts(port.getUsbDevice(), prefix+PREFIX);
 			}
 		}
-	}
-
-	/**
-	 * Display the message and exit.
-	 * @param msg The message to display.
-	 */
-	public static void exit(String msg)
-	{
-		System.err.println(msg);
-		System.exit(1);
 	}
 
 	public static final String PREFIX = "  ";
