@@ -29,9 +29,12 @@ public class FindUsbDevice
 		UsbHub virtualRootUsbHub = ShowTopology.getVirtualRootUsbHub();
 		List usbDevices = null;
 
-		/**
-		 * This will recursively search for all devices with the specified vendor and product id.
-		 */
+		/* This gets all connected devices. */
+		usbDevices = getAllUsbDevices(virtualRootUsbHub);
+
+		System.out.println("Found " + usbDevices.size() + " devices total.");
+
+		/* This will recursively search for all devices with the specified vendor and product id. */
 		usbDevices = getUsbDevicesWithId(virtualRootUsbHub, getVendorId(), getProductId());
 
 		System.out.print("Found " + usbDevices.size() + " devices with");
@@ -39,23 +42,43 @@ public class FindUsbDevice
 		System.out.print(" product ID 0x" + UsbUtil.toHexString(getProductId()));
 		System.out.println("");
 
-		/**
-		 * This will recursively search for all devices with the specified device class.
-		 */
+		/* This will recursively search for all devices with the specified device class. */
 		usbDevices = getUsbDevicesWithDeviceClass(virtualRootUsbHub, getDeviceClass());
 
 		System.out.print("Found " + usbDevices.size() + " devices with");
 		System.out.print(" device class 0x" + UsbUtil.toHexString(getDeviceClass()));
 		System.out.println("");
 
-		/**
-		 * This will recursively search for all devices with the specified manufacturer string.
-		 */
+		/* This will recursively search for all devices with the specified manufacturer string. */
 		usbDevices = getUsbDevicesWithManufacturerString(virtualRootUsbHub, getManufacturerString());
 
 		System.out.print("Found " + usbDevices.size() + " devices with");
 		System.out.print(" manufacturer string \"" + getManufacturerString() + "\"");
 		System.out.println("");
+	}
+
+	/**
+	 * This forms an inclusive list of all UsbDevices connected to this UsbDevice.
+	 * <p>
+	 * The list includes the provided device.  If the device is also a hub,
+	 * the list will include all devices connected to it, recursively.
+	 * @param usbDevice The UsbDevice to use.
+	 * @return An inclusive List of all connected UsbDevices.
+	 */
+	public static List getAllUsbDevices(UsbDevice usbDevice)
+	{
+		List list = new ArrayList();
+
+		list.add(usbDevice);
+
+		/* this is just normal recursion.  Nothing special. */
+		if (usbDevice.isUsbHub()) {
+			List devices = ((UsbHub)usbDevice).getAttachedUsbDevices();
+			for (int i=0; i<devices.size(); i++)
+				list.addAll(getAllUsbDevices((UsbDevice)devices.get(i)));
+		}
+
+		return list;
 	}
 
 	/**
